@@ -7,7 +7,7 @@ import (
 	_ "net/http/pprof"
 	"time"
 
-	"github.com/ewr/elasticsearch_exporter/exporter"
+	"github.com/betterdoctor/elasticsearch_exporter/exporter"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -27,7 +27,11 @@ func main() {
 		*esURI = *esURI + "/_nodes/_local/stats"
 	}
 
-	exporter := exporter.NewExporter(*esURI, *esTimeout, *esAllNodes)
+	exporter, err := exporter.NewExporter(*esURI, *esTimeout, *esAllNodes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	prometheus.MustRegister(exporter)
 
 	log.Println("Starting Server:", *listenAddress)

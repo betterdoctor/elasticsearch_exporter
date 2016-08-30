@@ -2,10 +2,12 @@ package exporter
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -16,6 +18,7 @@ const (
 	namespace = "elasticsearch"
 )
 
+// VecInfo represents info about a Prometheus metric
 type VecInfo struct {
 	help   string
 	labels []string
@@ -146,7 +149,11 @@ type Exporter struct {
 }
 
 // NewExporter returns an initialized Exporter.
-func NewExporter(uri string, timeout time.Duration, allNodes bool) *Exporter {
+func NewExporter(uri string, timeout time.Duration, allNodes bool) (*Exporter, error) {
+	if len(strings.Split(uri, ":")) < 2 {
+		return nil, fmt.Errorf("Invalid URI for --es.uri: %s", uri)
+	}
+
 	counters := make(map[string]*prometheus.CounterVec, len(counterMetrics))
 	counterVecs := make(map[string]*prometheus.CounterVec, len(counterVecMetrics))
 	gauges := make(map[string]*prometheus.GaugeVec, len(gaugeMetrics))
@@ -215,7 +222,7 @@ func NewExporter(uri string, timeout time.Duration, allNodes bool) *Exporter {
 				},
 			},
 		},
-	}
+	}, nil
 }
 
 // Describe describes all the metrics ever exported by the elasticsearch
