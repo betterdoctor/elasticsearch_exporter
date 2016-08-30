@@ -6,7 +6,9 @@ To run it:
 
 ```bash
 make
-./elasticsearch_exporter [flags]
+make release
+docker build -t elasticsearch_exporter .
+docker run --rm -p 9108:9108 elasticsearch_exporter -h
 ```
 
 ### Flags
@@ -16,7 +18,7 @@ make
 ```
 
 * __`es.uri`:__ Address (host and port) of the Elasticsearch node we should
-    connect to. This could be a local node (`localhost:8500`, for instance), or
+    connect to. This could be a local node (`http://localhost:9200`, for instance), or
     the address of a remote Elasticsearch server.
 * __`es.all`:__ If true, query stats for all nodes in the cluster,
     rather than just the node we connect to.
@@ -38,4 +40,4 @@ we'll attempt to report important values for both.
 * `indices.query_cache` becomes `indices.request_cache`
 * `process.cpu` lost `user` and `sys` time, so we're now reporting `total`
 * Added `process.cpu.max_file_descriptors`
-* 
+*
